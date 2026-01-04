@@ -1,0 +1,30 @@
+Day 1 Goals:
+- setup pipeline
+- load an image with opencv
+- run own grayscale code w/out opencv
+- save the output
+- print the timing
+
+What does CV_8UC3 mean?
+
+It’s OpenCV’s way to describe pixel format:
+8U = 8-bit unsigned numbers (0–255)
+C3 = 3 channels (Blue, Green, Red)
+So a color pixel is 3 bytes:
+    B, G, R (OpenCV uses BGR order)
+
+3) What is grayscale?
+
+Grayscale has 1 channel (CV_8UC1).
+One number per pixel (0–255).
+
+To convert BGR → Gray:
+
+use a weighted average (brightness perception)
+
+common formula:
+gray = 0.114*B + 0.587*G + 0.299*R
+
+4) What is “timing” in C++?
+
+We use <chrono> to measure how long code takes.
