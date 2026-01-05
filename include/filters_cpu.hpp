@@ -4,9 +4,12 @@
 //Converts a color image (BGR) into grayscale
 // Input: bgr (CV_8UC3)
 // Output: gray (CV_8UC1)
-
 void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray);
 
+// Box blur on grayscale image
+// radius = 1 -> 3x3, radius = 2 -> 5x5 etc.
+
+void box_blur_cpu(const cv::Mat& gray, cv::Mat& blurred, int radius);
 
 /*
 #pragma once prvents the header from being included twice

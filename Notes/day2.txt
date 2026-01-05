@@ -1,0 +1,61 @@
+Day 2
+
+going from frrom single pixel math to neighborhood based filters
+
+learning:
+- how image filters work
+- how to safely access pixels
+- how to handle image borders
+- how to structure your code so filters can be chained
+- how to reuse buffers (important for performance later)
+
+-- goal is to run following command and see blurred image:
+- ./build/pipeline --image data/input.jpg --out output/out_blur.png
+
+
+WHAT IS BLUR:
+- replace each pixel with the average of nearby pixels
+
+WHAT IS A BOX BLUR
+- blur that uses a square window
+
+radius = 1 -> 3x3 window
+[X][X][X]
+[X][O][X]   ← O = pixel we’re computing
+[X][X][X]
+
+radius = 2 -> 5x5 window
+[X][X][X][X][X]
+[X][X][X][X][X]
+[X][X][O][X][X]
+[X][X][X][X][X]
+[X][X][X][X][X]
+
+for each pixel:
+1. sum all values in the window
+2. Divide by number of pixels
+
+First problem i must solve -> IMAGE BORDERS
+
+for ex - top left pixel (0,0)
+there is no direction vector:
+(−1, 0)
+(0, −1)
+(−1, −1)
+
+we solve this by clamping
+if a neighbor goes out of bounds:
+- clamp it back into the image
+yy = clamp(y + dy, 0, height - 1)
+xx = clamp(x + dx, 0, width  - 1)
+
+
+Day 2 structure
+1. add a box blur function 
+2. call it from main
+3. save blurred output
+4. print timing
+
+no cli changes
+
+
