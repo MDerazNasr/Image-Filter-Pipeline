@@ -3,7 +3,9 @@
 #include <opencv2/core/hal/interface.h>
 #include <stdexcept>
 #include <algorithm> //for std::clamp
-
+#include <cmath>
+#include <algorithm>
+    
 /*
 Breakdown -
 why grayscale input?
@@ -113,6 +115,59 @@ void box_blur_cpu(const cv::Mat& gray, cv::Mat& blurred, int radius) {
                 // 5 - average and write output pixel
                 outRow[x] = static_cast<uint8_t>(sum / area);
             }
+        }
+    }
+}
+
+void sobel_cpu(const cv::Mat &gray, cv::Mat &edges) {
+    // 1 - validate input
+    if (gray.empty()) {
+        throw std::runtime_error("sobel_cpu: input image is empty");
+    }
+    if (gray.type() != CV_8UC1) {
+        throw std::runtime_error("sobel_cpu: expected CV_8UC1 grayscale image");
+    }
+
+    // 2 - allovcate output
+    edges.create(gray.rows, gray.cols, CV_8UC1);
+
+    // 3 - sobel kernels (fixed constants)
+    const int Gx[3][3] = {
+        {-1, 0, 1},
+        {-2, 0, 2},
+        {-1, 0, 1}
+    };
+    const int Gy[3][3] = {
+        {-1, -2, -1},
+        { 0,  0,  0},
+        { 1,  2,  1}
+    };
+    //4 - loop over image
+    for (int y = 0; y < gray.rows; y++) {
+        uint8_t* outRow = edges.ptr<uint8_t>(y);
+
+        for (int x = 0; x < gray.cols; x++) {
+            int sx = 0;
+            int sy = 0;
+
+            // 5 - Apply 3x3 Sobel kernels
+            for (int dy = -1; dy <= 1; dy++) {
+                int yy = std::clamp(y + dy, 0, gray.rows - 1);
+                const uint8_t* row = gray.ptr<uint8_t>(yy);
+
+                for (int dx = -1; dx <= 1; dx++) {
+                    int xx = std::clamp(x + dx, 0, gray.cols - 1);
+                    int pixel = row[xx];
+                    
+                    sx += pixel * Gx[dy + 1][dx + 1];
+                    sy += pixel * Gy[dy + 1][dx + 1];
+                }
+            }
+            // 6 - Combine gradients (fast magnitude approximation)
+            int magnitude = std::abs(sx) + std::abs(sy);
+
+            // 7 - Clamp to valid 8-bit range
+            outRow[x] = static_cast<uint8_t>(std::clamp(magnitude, 0, 255,));
         }
     }
 }

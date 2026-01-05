@@ -1,0 +1,59 @@
+Goal for Day 3
+ - take a grayscale/blurred image
+ - compute the edges using Sobel (a fundamental discrete differentiation operator used in image processing and computer vision for edge detection.)
+ - output an edge image
+ - understand
+
+you will run:
+./build/pipeline --image data/input.jpg --out output/out_edges.png
+
+What is an edge?
+- an edge is where pixel values change suddenly
+
+example (1d)
+10 10 10 10 200 200 200
+              ↑
+            edge
+
+Edges matter because:
+- objects are defined by boundaries
+- vision systems detect structure, not colour
+- Almost evert vision pipeline starts with gradients
+
+What Sobel actually does
+- Sobel measures how fast brightness changes in:
+    - x direction (left <-> right)
+    - Y direction (top <-> bottom)
+it does this usuing two tiny 3x3 kernels
+
+Sobel kernels (memorise these)
+- horizontal change (Gx)
+- Detects vertical edges\
+-1  0  +1
+-2  0  +2
+-1  0  +1
+
+vertical change (Gy)
+Detects horizontal edges
+-1  -2  -1
+ 0   0   0
++1  +2  +1
+
+what happens per pixel?
+- for each (x, y)
+1. apply Gx kernel -> get sx
+2. apply Gy kernel -> get sy
+3. combine them -> edge strength
+
+True magnitude:
+- sqrt(sx^2 + sy^2)
+- |sx| + |sy|
+this is:
+- faster
+- good enough
+- very common in practice
+
+Borders again (same solution):
+yy = clamp(y + dy, 0, height - 1)
+xx = clamp(x + dx, 0, width  - 1)
+- nothing new here - you already know this

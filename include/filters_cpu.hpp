@@ -11,6 +11,9 @@ void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray);
 
 void box_blur_cpu(const cv::Mat& gray, cv::Mat& blurred, int radius);
 
+//Sobel edge detection on grayscale image
+void sobel_cpu(const cv::Mat& gray, cv::Mat& edges);
+
 /*
 #pragma once prvents the header from being included twice
 
