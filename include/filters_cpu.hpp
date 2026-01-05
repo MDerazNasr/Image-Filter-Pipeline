@@ -9,7 +9,7 @@ void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray);
 // Box blur on grayscale image
 // radius = 1 -> 3x3, radius = 2 -> 5x5 etc.
 
-void box_blur_cpu(const cv::Mat& gray, cv::Mat& blurred, int radius);
+void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius);
 
 //Sobel edge detection on grayscale image
 void sobel_cpu(const cv::Mat& gray, cv::Mat& edges);

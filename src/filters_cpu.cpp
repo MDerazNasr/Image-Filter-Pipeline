@@ -4,8 +4,7 @@
 #include <stdexcept>
 #include <algorithm> //for std::clamp
 #include <cmath>
-#include <algorithm>
-    
+#include <vector>
 /*
 Breakdown -
 why grayscale input?
@@ -60,137 +59,138 @@ void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray) {
 
 }
 
-void box_blur_cpu(const cv::Mat& gray, cv::Mat& blurred, int radius) {
-    // 1 - validate input
-    if (gray.empty()) {
-        throw std::runtime_error("box_blur_cpu: input image is empty");
+// Fast box blur using two 1D passes (horizontal then vertical).
+// This is still a true box blur, just computed efficiently.
+void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius) {
+    // 1) Validate input
+    if (gray.empty()) throw std::runtime_error("box_blur_cpu_fast: input empty");
+    if (gray.type() != CV_8UC1) throw std::runtime_error("box_blur_cpu_fast: expected CV_8UC1");
+    if (radius < 1) throw std::runtime_error("box_blur_cpu_fast: radius must be >= 1");
+
+    int w = gray.cols;
+    int h = gray.rows;
+    int k = 2 * radius + 1;
+
+    // 2) Temporary buffer for the horizontal pass (store ints so sums don't overflow)
+    // tmp[y*w + x] will hold the horizontally blurred value (still not divided vertically yet)
+    std::vector<int> tmp(w * h, 0);
+
+    // -----------------------------
+    // PASS 1: Horizontal sliding sum
+    // -----------------------------
+    for (int y = 0; y < h; y++) {
+        const uint8_t* row = gray.ptr<uint8_t>(y);
+
+        // Compute initial window sum for x=0
+        // Window covers [x-radius, x+radius], but we clamp to [0, w-1]
+        int sum = 0;
+        for (int dx = -radius; dx <= radius; dx++) {
+            int xx = std::clamp(dx, 0, w - 1); // since x=0, x+dx = dx
+            sum += row[xx];
+        }
+
+        // Store result for x=0 (not divided by k yet? we can divide now)
+        tmp[y * w + 0] = sum;
+
+        // Slide window across the row
+        for (int x = 1; x < w; x++) {
+            // Pixel leaving window: x-1-radius
+            int x_out = std::clamp(x - 1 - radius, 0, w - 1);
+            // Pixel entering window: x+radius
+            int x_in  = std::clamp(x + radius, 0, w - 1);
+
+            sum -= row[x_out];
+            sum += row[x_in];
+
+            tmp[y * w + x] = sum;
+        }
     }
-    if (gray.type() != CV_8UC1) {
-        throw std::runtime_error("box_blur_cpu: expected CV_8UC1 grayscale image");
-    }
-    if (radius < 1) {
-        throw std::runtime_error("box_blur_cpu: radius must be >= 1");
-    }
 
-    // 2 - Allocate output image
-    blurred.create(gray.rows, gray.cols, CV_8UC1);
+    // 3) Allocate output
+    blurred.create(h, w, CV_8UC1);
 
-    // Size of the kernel window
-    //This line is imp, determines size of kernel
-    int kernelSize = 2 * radius + 1;
-    int area = kernelSize * kernelSize;
+    // -----------------------------
+    // PASS 2: Vertical sliding sum
+    // Now we blur the horizontal sums vertically and divide by k*k.
+    // -----------------------------
+    for (int x = 0; x < w; x++) {
+        // Initial vertical window sum for y=0
+        int sum = 0;
+        for (int dy = -radius; dy <= radius; dy++) {
+            int yy = std::clamp(dy, 0, h - 1); // since y=0, y+dy = dy
+            sum += tmp[yy * w + x];
+        }
 
-    // 3 - loop over every pixel in the image
-    for (int y = 0; y < gray.rows; y++) {
-        const uint8_t * inRow = gray.ptr<uint8_t>(y);
-        uint8_t * outRow = blurred.ptr<uint8_t>(y);
+        // Write output for y=0
+        int area = k * k;
+        blurred.ptr<uint8_t>(0)[x] = static_cast<uint8_t>(std::clamp(sum / area, 0, 255));
 
-        for (int x = 0; x < gray.cols; x++) {
-            const uint8_t* inRow = gray.ptr<uint8_t>(y);
-            uint8_t* outRow = blurred.ptr<uint8_t>(y);
+        // Slide window down the column
+        for (int y = 1; y < h; y++) {
+            int y_out = std::clamp(y - 1 - radius, 0, h - 1);
+            int y_in  = std::clamp(y + radius, 0, h - 1);
 
-            for (int x = 0; x < gray.cols; x++) {
-                int sum = 0;
+            sum -= tmp[y_out * w + x];
+            sum += tmp[y_in * w + x];
 
-                // 4 - loop over neighborhood
-                // heart of the blurring
-                // we are visiting every neighbor pixel
-                // summing values
-                for (int dy = -radius;dy <= radius; dy++) {
-                    /*
-                    This prevents:
-                        segmentation faults
-                        undefined behavior
-                        corrupted memory
-                    */
-                    int yy = std::clamp(y + dy, 0, gray.rows - 1);
-                    const uint8_t* neighborRow = gray.ptr<uint8_t>(yy);
-
-                    for (int dx = -radius; dx <= radius; dx++) {
-                        int xx = std::clamp(x + dx, 0, gray.cols - 1);
-                        sum += neighborRow[xx];
-                    }
-
-                }
-                // 5 - average and write output pixel
-                outRow[x] = static_cast<uint8_t>(sum / area);
-            }
+            blurred.ptr<uint8_t>(y)[x] = static_cast<uint8_t>(std::clamp(sum / area, 0, 255));
         }
     }
 }
 
-/*
-Using two kernels as:
-- Gx sees left/right differences
-- Gy sees up/down differences
-- Edges can be in any direction -> combine both
+void sobel_cpu(const cv::Mat& gray, cv::Mat& edges) {
+    // Validate input
+    if (gray.empty()) throw std::runtime_error("sobel_cpu: input empty");
+    if (gray.type() != CV_8UC1) throw std::runtime_error("sobel_cpu: expected CV_8UC1");
 
-Why dy + 1 and dx + 1?
+    int w = gray.cols;
+    int h = gray.rows;
 
-dy goes from -1 → +1, but array indices go 0 → 2
-So:
-dy = -1 → index 0
-dy =  0 → index 1
-dy = +1 → index 2
+    // Allocate output
+    edges.create(h, w, CV_8UC1);
 
-Why abs + abs?
+    // Sobel kernels
+    // Gx (horizontal gradient):
+    //  -1  0  1
+    //  -2  0  2
+    //  -1  0  1
+    // Gy (vertical gradient):
+    //  -1 -2 -1
+    //   0  0  0
+    //   1  2  1
 
-Because:
-sqrt(sx*sx + sy*sy) is expensive
-|sx| + |sy| is fast
-The visual difference is tiny
-This matters later for real-time systems.
-*/
-
-void sobel_cpu(const cv::Mat &gray, cv::Mat &edges) {
-    // 1 - validate input
-    if (gray.empty()) {
-        throw std::runtime_error("sobel_cpu: input image is empty");
-    }
-    if (gray.type() != CV_8UC1) {
-        throw std::runtime_error("sobel_cpu: expected CV_8UC1 grayscale image");
-    }
-
-    // 2 - allovcate output
-    edges.create(gray.rows, gray.cols, CV_8UC1);
-
-    // 3 - sobel kernels (fixed constants)
-    const int Gx[3][3] = {
-        {-1, 0, 1},
-        {-2, 0, 2},
-        {-1, 0, 1}
-    };
-    const int Gy[3][3] = {
-        {-1, -2, -1},
-        { 0,  0,  0},
-        { 1,  2,  1}
-    };
-    //4 - loop over image
-    for (int y = 0; y < gray.rows; y++) {
+    for (int y = 1; y < h - 1; y++) {
+        const uint8_t* row_m1 = gray.ptr<uint8_t>(y - 1);
+        const uint8_t* row_0  = gray.ptr<uint8_t>(y);
+        const uint8_t* row_p1 = gray.ptr<uint8_t>(y + 1);
         uint8_t* outRow = edges.ptr<uint8_t>(y);
 
-        for (int x = 0; x < gray.cols; x++) {
-            int sx = 0;
-            int sy = 0;
+        for (int x = 1; x < w - 1; x++) {
+            // Compute Gx (horizontal gradient)
+            int gx = -1 * row_m1[x - 1] + 1 * row_m1[x + 1]
+                   + -2 * row_0[x - 1]  + 2 * row_0[x + 1]
+                   + -1 * row_p1[x - 1] + 1 * row_p1[x + 1];
 
-            // 5 - Apply 3x3 Sobel kernels
-            for (int dy = -1; dy <= 1; dy++) {
-                int yy = std::clamp(y + dy, 0, gray.rows - 1);
-                const uint8_t* row = gray.ptr<uint8_t>(yy);
+            // Compute Gy (vertical gradient)
+            int gy = -1 * row_m1[x - 1] + -2 * row_m1[x] + -1 * row_m1[x + 1]
+                   +  1 * row_p1[x - 1] +  2 * row_p1[x] +  1 * row_p1[x + 1];
 
-                for (int dx = -1; dx <= 1; dx++) {
-                    int xx = std::clamp(x + dx, 0, gray.cols - 1);
-                    int pixel = row[xx];
-                    
-                    sx += pixel * Gx[dy + 1][dx + 1];
-                    sy += pixel * Gy[dy + 1][dx + 1];
-                }
+            // Magnitude: sqrt(gx^2 + gy^2)
+            int magnitude = static_cast<int>(std::sqrt(gx * gx + gy * gy));
+            outRow[x] = clamp_u8(magnitude);
+        }
+    }
+
+    // Set border pixels to 0 (can't compute gradient at edges)
+    for (int y = 0; y < h; y++) {
+        uint8_t* outRow = edges.ptr<uint8_t>(y);
+        if (y == 0 || y == h - 1) {
+            for (int x = 0; x < w; x++) {
+                outRow[x] = 0;
             }
-            // 6 - Combine gradients (fast magnitude approximation)
-            int magnitude = std::abs(sx) + std::abs(sy);
-
-            // 7 - Clamp to valid 8-bit range
-            outRow[x] = static_cast<uint8_t>(std::clamp(magnitude, 0, 255,));
+        } else {
+            outRow[0] = 0;
+            outRow[w - 1] = 0;
         }
     }
 }

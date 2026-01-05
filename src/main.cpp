@@ -105,23 +105,30 @@ int main(int argc, char** argv) {
 
         cv::Mat gray;
         cv::Mat blurred;
+        cv::Mat edges;
 
         Timer tGray;
         grayscale_cpu(bgr, gray);
         double msGray = tGray.ms();
 
         Timer tBlur;
-        box_blur_cpu(gray, blurred, 1); //radius = 1 -> 3x3
+        box_blur_cpu_fast(gray, blurred, 1); //radius = 1 -> 3x3
         double msBlur = tBlur.ms();
 
+        Timer tSobel;
+        sobel_cpu(blurred, edges);
+        double msSobel = tSobel.ms();
+
         // Save blurred image
-        bool ok = cv::imwrite(outPath, blurred);
+        bool ok = cv::imwrite(outPath, edges);
         if (!ok) {
             throw std::runtime_error("Failed to write output image");
         }
         
         std::cout << "Grayscale time: " << msGray << " ms\n";
         std::cout << "Blur time: " << msBlur << " ms\n";
+        std::cout << "Sobel time: " << msSobel << " ms\n";
+
         
     } catch (const std::exception& e) {
         std::cerr << "[ERROR] " << e.what() << "\n";
