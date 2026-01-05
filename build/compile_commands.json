@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/build",
+  "command": "/usr/bin/clang++  -I/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/include -isystem /opt/homebrew/Cellar/opencv/4.13.0/include/opencv4 -g -std=gnu++17 -arch arm64 -o CMakeFiles/pipeline.dir/src/main.cpp.o -c /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp",
+  "file": "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp",
+  "output": "CMakeFiles/pipeline.dir/src/main.cpp.o"
+},
+{
+  "directory": "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/build",
+  "command": "/usr/bin/clang++  -I/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/include -isystem /opt/homebrew/Cellar/opencv/4.13.0/include/opencv4 -g -std=gnu++17 -arch arm64 -o CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o -c /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp",
+  "file": "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp",
+  "output": "CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o"
+}
+]

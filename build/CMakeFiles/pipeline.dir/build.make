@@ -76,29 +76,29 @@ CMakeFiles/pipeline.dir/src/main.cpp.o: CMakeFiles/pipeline.dir/flags.make
 CMakeFiles/pipeline.dir/src/main.cpp.o: /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp
 CMakeFiles/pipeline.dir/src/main.cpp.o: CMakeFiles/pipeline.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/pipeline.dir/src/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pipeline.dir/src/main.cpp.o -MF CMakeFiles/pipeline.dir/src/main.cpp.o.d -o CMakeFiles/pipeline.dir/src/main.cpp.o -c /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pipeline.dir/src/main.cpp.o -MF CMakeFiles/pipeline.dir/src/main.cpp.o.d -o CMakeFiles/pipeline.dir/src/main.cpp.o -c /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp
 
 CMakeFiles/pipeline.dir/src/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/pipeline.dir/src/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp > CMakeFiles/pipeline.dir/src/main.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp > CMakeFiles/pipeline.dir/src/main.cpp.i
 
 CMakeFiles/pipeline.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pipeline.dir/src/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp -o CMakeFiles/pipeline.dir/src/main.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp -o CMakeFiles/pipeline.dir/src/main.cpp.s
 
 CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o: CMakeFiles/pipeline.dir/flags.make
 CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o: /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp
 CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o: CMakeFiles/pipeline.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o -MF CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o.d -o CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o -c /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o -MF CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o.d -o CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o -c /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp
 
 CMakeFiles/pipeline.dir/src/filters_cpu.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/pipeline.dir/src/filters_cpu.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp > CMakeFiles/pipeline.dir/src/filters_cpu.cpp.i
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp > CMakeFiles/pipeline.dir/src/filters_cpu.cpp.i
 
 CMakeFiles/pipeline.dir/src/filters_cpu.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/pipeline.dir/src/filters_cpu.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp -o CMakeFiles/pipeline.dir/src/filters_cpu.cpp.s
+	/usr/bin/clang++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp -o CMakeFiles/pipeline.dir/src/filters_cpu.cpp.s
 
 # Object files for target pipeline
 pipeline_OBJECTS = \
@@ -111,62 +111,62 @@ pipeline_EXTERNAL_OBJECTS =
 pipeline: CMakeFiles/pipeline.dir/src/main.cpp.o
 pipeline: CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o
 pipeline: CMakeFiles/pipeline.dir/build.make
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_gapi.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_stitching.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_alphamat.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_aruco.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_bgsegm.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_bioinspired.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_ccalib.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_dnn_objdetect.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_dnn_superres.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_dpm.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_face.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_freetype.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_fuzzy.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_hfs.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_img_hash.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_intensity_transform.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_line_descriptor.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_mcc.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_quality.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_rapid.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_reg.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_rgbd.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_saliency.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_sfm.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_signal.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_stereo.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_structured_light.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_superres.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_surface_matching.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_tracking.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_videostab.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_viz.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_wechat_qrcode.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_xfeatures2d.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_xobjdetect.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_xphoto.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_shape.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_highgui.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_datasets.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_plot.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_text.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_ml.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_phase_unwrapping.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_optflow.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_ximgproc.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_video.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_videoio.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_imgcodecs.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_objdetect.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_calib3d.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_dnn.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_features2d.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_flann.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_photo.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_imgproc.4.13.0.dylib
-pipeline: /opt/homebrew/opt/opencv/lib/libopencv_core.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_gapi.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_stitching.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_alphamat.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_aruco.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_bgsegm.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_bioinspired.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_ccalib.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_dnn_objdetect.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_dnn_superres.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_dpm.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_face.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_freetype.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_fuzzy.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_hfs.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_img_hash.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_intensity_transform.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_line_descriptor.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_mcc.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_quality.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_rapid.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_reg.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_rgbd.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_saliency.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_sfm.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_signal.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_stereo.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_structured_light.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_superres.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_surface_matching.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_tracking.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_videostab.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_viz.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_wechat_qrcode.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_xfeatures2d.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_xobjdetect.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_xphoto.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_shape.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_highgui.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_datasets.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_plot.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_text.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_ml.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_phase_unwrapping.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_optflow.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_ximgproc.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_video.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_videoio.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_imgcodecs.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_objdetect.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_calib3d.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_dnn.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_features2d.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_flann.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_photo.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_imgproc.4.13.0.dylib
+pipeline: /opt/homebrew/lib/libopencv_core.4.13.0.dylib
 pipeline: CMakeFiles/pipeline.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable pipeline"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/pipeline.dir/link.txt --verbose=$(VERBOSE)
