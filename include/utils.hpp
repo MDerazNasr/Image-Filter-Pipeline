@@ -1,6 +1,14 @@
 #pragma once
 #include <chrono>
 
+/*
+class Timer defines a new type
+Timer() is a constructor: runs when you do Timer t;
+start_ is private so only Timer controls it (good design)
+ms() is const meaning "this function won't change the object"
+
+*/
+
 // Timer = a stopwatch object.
 // We create one, then ask "how many ms passed?"
 
