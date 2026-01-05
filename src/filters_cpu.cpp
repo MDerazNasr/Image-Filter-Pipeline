@@ -119,6 +119,29 @@ void box_blur_cpu(const cv::Mat& gray, cv::Mat& blurred, int radius) {
     }
 }
 
+/*
+Using two kernels as:
+- Gx sees left/right differences
+- Gy sees up/down differences
+- Edges can be in any direction -> combine both
+
+Why dy + 1 and dx + 1?
+
+dy goes from -1 → +1, but array indices go 0 → 2
+So:
+dy = -1 → index 0
+dy =  0 → index 1
+dy = +1 → index 2
+
+Why abs + abs?
+
+Because:
+sqrt(sx*sx + sy*sy) is expensive
+|sx| + |sy| is fast
+The visual difference is tiny
+This matters later for real-time systems.
+*/
+
 void sobel_cpu(const cv::Mat &gray, cv::Mat &edges) {
     // 1 - validate input
     if (gray.empty()) {
