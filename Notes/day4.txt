@@ -1,0 +1,13 @@
+Day 4 - minimal video pipeline
+
+Goals-
+- read video frames
+- run grayscale -> blur -> sobel on each frame
+- write output video
+- print fpz and per-frame timing
+- resuse buffers (no allocation every frame)
+
+CLI upgrade
+    Add: 
+        --video <path>
+        --out <path>
