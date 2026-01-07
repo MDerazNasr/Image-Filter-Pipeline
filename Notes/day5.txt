@@ -1,0 +1,30 @@
+Day 5 - multithreading
+
+goal
+- split the image into horizontal row chunks and have multiple CPU cores process different 
+chunks in parrallel
+
+--threads 8 should reduce per-frame time noticeably
+- no crashes no corrupted output
+- you understand what each thread is doing and why its safe
+
+mental model - why multithreading works
+
+your image is made of rows:
+- row 0
+- row 1
+- row 2
+- ....
+if each thread handles different rows, then:
+
+if each thread handles diffrent rows, then:
+- Thread A writes rows 0-40
+- Thread B writes rows 41-80 
+- Thread C writes rows 81-120
+- .... 
+
+They do not write to the same memory, so they won't fight
+
+Key rule to avoid bugs=
+- multiple threads can read the same input image safely
+- multiple threads can write to the same output image only if they write different rows
