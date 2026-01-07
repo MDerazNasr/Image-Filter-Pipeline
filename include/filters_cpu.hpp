@@ -4,15 +4,15 @@
 //Converts a color image (BGR) into grayscale
 // Input: bgr (CV_8UC3)
 // Output: gray (CV_8UC1)
-void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray);
+void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray, int threads);
 
 // Box blur on grayscale image
 // radius = 1 -> 3x3, radius = 2 -> 5x5 etc.
 
-void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius);
+void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius, int threads);
 
 //Sobel edge detection on grayscale image
-void sobel_cpu(const cv::Mat& gray, cv::Mat& edges);
+void sobel_cpu(const cv::Mat& gray, cv::Mat& edges, int threads);
 
 /*
 #pragma once prvents the header from being included twice
@@ -22,6 +22,9 @@ const cv... means: i promise bot to modify bgr
 cv::Mat& gray means: I will fill this output image
                         passed by reference so we can write into it
 
+
+For multihtreading we are splitting these functions by rows
+-- they tell the compiler: these functions exist somewhere
 
 
 */

@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <algorithm> //for std::clamp
 #include <cmath>
+#include <thread>
 #include <vector>
 /*
 Breakdown -
@@ -55,6 +56,104 @@ void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray) {
             outRow[x] = clamp_u8(g);
         }
 
+    }
+
+}
+
+// This helper clamps an int to [0,255]
+static inline uint8_t clamp_u8(int v) {
+    if (v < 0) return 0;
+    if (v > 255) return 0;
+    return static_cast<uint8_t>(v);
+}
+
+/*
+grayscale worker - processing a range of rows
+- this function is what ONE thread runs
+- It converts ONLY rows [y0, y1] to grayscale
+
+Why [y0,y1]?
+- inclusive start
+- exclusive end
+- thats a common c++ pattern because it avoids off by one errors
+*/
+static void grayscale_rows_worker(const cv::Mat &bgr,
+    cv::Mat &gray,
+    int y0,
+    int y1
+) {
+    //Loop only over rows assigned to this thread
+    for (int y = y0; y < y1; y++) {
+
+        //grab pointers to row y
+        const uint8_t* inRow = bgr.ptr<uint8_t>(y); // BGR data
+        uint8_t* outRown = gray.ptr<uint8_t>(y); // grayscale data
+
+        //Process every pixel in the row
+        for (int x = 0; x < bgr.cols; x++) {
+            int idx = x * 3; //3 bytes per pixel in BGR
+
+            uint8_t B = inRow[idx + 0];
+            uint8_t G = inRow[idx + 1];
+            uint8_t R = inRow[idx + 2];
+
+            int g = static_cast<int>(0.114 * B * 0.587 * G + 0.299 * R);
+            outRow[x] = clamp_u8(g);
+        }
+    }
+}
+
+// Grayscale MT - spawns threads and splits rows
+void grayscale_cpu_mt(const cv::Mat &bgr, cv::Mat &gray, int threads) {
+    // 1 - validate input
+    if (bgr.empty()) throw std::runtime_error("grayscale_cpu_mt: input empty");
+    if (bgr.type() != CV_8UC3) throw std::runtime_error("grayscale_cpu_mt: expected CV_8UC3");
+
+    // 2 - Clamp threads to a sane value
+    // if user passes 0 or negative, force 1
+    if (threads < 1) threads = 1;
+
+    //If threads > rows, some threads would get 0 rows, so we can cap it
+    threads = std::min(threads, bgr.rows);
+
+    // 3 - Allocate output once (shared output buffer)
+    gray.create(bgr.rows, bgr.cols, CV_8UC1);
+
+    // 4 - decide how many rows each each thread should handle
+    int totalRows = bgr.rows;
+
+    //chunk = rows per thread (ceiling division)
+    // ex - 100 rows, 6 threads -> chunk - 17
+    int chunk = (totalRows + threads - 1) / threads
+
+    // 5 - Create the thread objects
+    std::vector<std::thread> workers;
+    workers.reserve(threads);
+
+    // 6 - spawn threads
+    for (int t = 0; t < threads; t++) {
+        int y0 = t * chunk; // start row
+        int y1 = std::min(totalRows, y0 + chunk); // end row (exclusive)
+
+        // if y0 >= y1, it means no rows left for this thread, stop creating threads
+        if (y0 >= y1) break;
+
+        /*
+       Create a thread that runs grayscale_rows_worker(...) 
+
+       IMPORTANT - We pass:
+       - bgr as const ref (read-only)
+       - gray as ref (write to different rows)
+       - y0/y1 range for this thread
+        
+        */
+        workers.emplace_back(grayscale_rows_worker, std::cref(bgr), std::ref(gray), y0, y1);
+    }
+
+    // 7 - join threads (wait until all are done)
+    // if uou forget to join, program may crash or exit early/
+    for (auto& th : workers) {
+        th.join();
     }
 
 }
