@@ -124,7 +124,7 @@ void grayscale_cpu_mt(const cv::Mat &bgr, cv::Mat &gray, int threads) {
 
     //chunk = rows per thread (ceiling division)
     // ex - 100 rows, 6 threads -> chunk - 17
-    int chunk = (totalRows + threads - 1) / threads
+    int chunk = (totalRows + threads - 1) / threads;
 
     // 5 - Create the thread objects
     std::vector<std::thread> workers;
@@ -236,6 +236,13 @@ void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius) {
         }
     }
 }
+// pass 1 worker - horizontal blur for rows [y0, y1]
+// writes into tmp[] but only for those rows -> safe
+static void blur_horizontal_rows_worker(
+    const cv::Mat& gray,
+    std::vector<int>& tmp,
+    int
+)
 
 void sobel_cpu(const cv::Mat& gray, cv::Mat& edges) {
     // Validate input
@@ -292,4 +299,11 @@ void sobel_cpu(const cv::Mat& gray, cv::Mat& edges) {
             outRow[w - 1] = 0;
         }
     }
+}
+
+static void sobel_rows_worker(const cv::Mat& gray, cv::Mat& edges, int y0, int y1) {
+    const int Gx[3][3] = {{-1,0,1}, {-2,0,2}, {-1,0,1}};
+    const int Gy[3][3] = {{-1,-2,-1}, {0,0,0}, (1,2,2)};
+
+
 }
