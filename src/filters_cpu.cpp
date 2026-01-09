@@ -241,8 +241,21 @@ void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius) {
 static void blur_horizontal_rows_worker(
     const cv::Mat& gray,
     std::vector<int>& tmp,
-    int
-)
+    int radius,
+    int y0, 
+    int y1
+) {
+    int w = gray.cols;
+    int k = 2 * radius + 1;
+
+    for (int y = y0; y < y1; y++) {
+        const uint8_t* row = gray.ptr<uint8_t>(y);
+
+        //initial sum for x = 0
+        int sum = 0;
+    }
+
+}
 
 void sobel_cpu(const cv::Mat& gray, cv::Mat& edges) {
     // Validate input
