@@ -1,5 +1,6 @@
 #pragma once
 #include <opencv2/opencv.hpp>
+#include "workspace.hpp"
 
 //Converts a color image (BGR) into grayscale
 // Input: bgr (CV_8UC3)
@@ -28,3 +29,11 @@ For multihtreading we are splitting these functions by rows
 
 
 */
+// Fast blur using workspace (no allocations inside)
+void box_blur_cpu_fast_mt_ws(
+    const cv::Mat &gray,
+    cv::Mat &blurred,
+    int radius,
+    int threads,
+    CpuWorkspace ws
+);
