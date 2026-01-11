@@ -418,136 +418,55 @@ void sobel_cpu(const cv::Mat& gray, cv::Mat& edges) {
         }
     }
 }
-
-// -------------------------------
-// PASS 1 WORKER: Horizontal blur for rows [y0, y1)
-// Writes into tmp[] but only for those rows -> safe
-// -------------------------------
-static void blur_horizontal_rows_worker(
-    const cv::Mat& gray,
-    std::vector<int>& tmp,
-    int radius,
-    int y0,
-    int y1
-) {
-    int w = gray.cols;
-    int k = 2 * radius + 1;
+static void sobel_rows_worker(const cv::Mat& gray, cv::Mat& edges, int y0, int y1) {
+    const int Gx[3][3] = {{-1,0,1},{-2,0,2},{-1,0,1}};
+    const int Gy[3][3] = {{-1,-2,-1},{0,0,0},{1,2,1}};
 
     for (int y = y0; y < y1; y++) {
-        const uint8_t* row = gray.ptr<uint8_t>(y);
+        uint8_t* outRow = edges.ptr<uint8_t>(y);
 
-        // Initial sum for x=0
-        int sum = 0;
-        for (int dx = -radius; dx <= radius; dx++) {
-            int xx = std::clamp(dx, 0, w - 1);
-            sum += row[xx];
-        }
-        tmp[y * w + 0] = sum;
+        for (int x = 0; x < gray.cols; x++) {
+            int sx = 0, sy = 0;
 
-        // Slide across the row
-        for (int x = 1; x < w; x++) {
-            int x_out = std::clamp(x - 1 - radius, 0, w - 1);
-            int x_in  = std::clamp(x + radius,      0, w - 1);
-            sum -= row[x_out];
-            sum += row[x_in];
-            tmp[y * w + x] = sum;
-        }
-    }
-}
+            for (int dy = -1; dy <= 1; dy++) {
+                int yy = std::clamp(y + dy, 0, gray.rows - 1);
+                const uint8_t* row = gray.ptr<uint8_t>(yy);
 
-// -------------------------------
-// PASS 2 WORKER: Vertical blur for columns [x0, x1)
-// Reads tmp[] and writes blurred image columns -> safe
-// -------------------------------
-static void blur_vertical_cols_worker(
-    const std::vector<int>& tmp,
-    cv::Mat& blurred,
-    int w,
-    int h,
-    int radius,
-    int x0,
-    int x1
-) {
-    int k = 2 * radius + 1;
-    int area = k * k;
+                for (int dx = -1; dx <= 1; dx++) {
+                    int xx = std::clamp(x + dx, 0, gray.cols - 1);
+                    int p = row[xx];
+                    sx += p * Gx[dy + 1][dx + 1];
+                    sy += p * Gy[dy + 1][dx + 1];
+                }
+            }
 
-    for (int x = x0; x < x1; x++) {
-        // Initial sum for y=0
-        int sum = 0;
-        for (int dy = -radius; dy <= radius; dy++) {
-            int yy = std::clamp(dy, 0, h - 1);
-            sum += tmp[yy * w + x];
-        }
-
-        blurred.ptr<uint8_t>(0)[x] = (uint8_t)std::clamp(sum / area, 0, 255);
-
-        // Slide down
-        for (int y = 1; y < h; y++) {
-            int y_out = std::clamp(y - 1 - radius, 0, h - 1);
-            int y_in  = std::clamp(y + radius,     0, h - 1);
-
-            sum -= tmp[y_out * w + x];
-            sum += tmp[y_in  * w + x];
-
-            blurred.ptr<uint8_t>(y)[x] = (uint8_t)std::clamp(sum / area, 0, 255);
+            int mag = std::abs(sx) + std::abs(sy);
+            outRow[x] = (uint8_t)std::clamp(mag, 0, 255);
         }
     }
 }
 
-void box_blur_cpu_fast_mt(const cv::Mat& gray, cv::Mat& blurred, int radius, int threads) {
-    // 1) Validate
-    if (gray.empty()) throw std::runtime_error("box_blur_cpu_fast_mt: input empty");
-    if (gray.type() != CV_8UC1) throw std::runtime_error("box_blur_cpu_fast_mt: expected CV_8UC1");
-    if (radius < 1) throw std::runtime_error("box_blur_cpu_fast_mt: radius must be >= 1");
+void sobel_cpu_mt(const cv::Mat& gray, cv::Mat& edges, int threads) {
+    if (gray.empty()) throw std::runtime_error("sobel_cpu_mt: input empty");
+    if (gray.type() != CV_8UC1) throw std::runtime_error("sobel_cpu_mt: expected CV_8UC1");
 
-    int w = gray.cols;
-    int h = gray.rows;
-
-    // 2) Clamp threads
     if (threads < 1) threads = 1;
-    threads = std::min(threads, h); // for row-splitting pass
+    threads = std::min(threads, gray.rows);
 
-    // 3) tmp holds horizontal sums
-    std::vector<int> tmp(w * h, 0);
+    edges.create(gray.rows, gray.cols, CV_8UC1);
 
-    // 4) PASS 1: split by rows
-    {
-        int chunk = (h + threads - 1) / threads;
-        std::vector<std::thread> workers;
-        workers.reserve(threads);
+    int h = gray.rows;
+    int chunk = (h + threads - 1) / threads;
 
-        for (int t = 0; t < threads; t++) {
-            int y0 = t * chunk;
-            int y1 = std::min(h, y0 + chunk);
-            if (y0 >= y1) break;
+    std::vector<std::thread> workers;
+    workers.reserve(threads);
 
-            workers.emplace_back(blur_horizontal_rows_worker,
-                                 std::cref(gray), std::ref(tmp),
-                                 radius, y0, y1);
-        }
-        for (auto& th : workers) th.join();
+    for (int t = 0; t < threads; t++) {
+        int y0 = t * chunk;
+        int y1 = std::min(h, y0 + chunk);
+        if (y0 >= y1) break;
+
+        workers.emplace_back(sobel_rows_worker, std::cref(gray), std::ref(edges), y0, y1);
     }
-
-    // 5) Allocate output
-    blurred.create(h, w, CV_8UC1);
-
-    // 6) PASS 2: split by columns
-    // Here, splitting by columns makes sense because each worker writes different columns.
-    {
-        int threads2 = std::min(threads, w); // cap by number of columns
-        int chunk = (w + threads2 - 1) / threads2;
-        std::vector<std::thread> workers;
-        workers.reserve(threads2);
-
-        for (int t = 0; t < threads2; t++) {
-            int x0 = t * chunk;
-            int x1 = std::min(w, x0 + chunk);
-            if (x0 >= x1) break;
-
-            workers.emplace_back(blur_vertical_cols_worker,
-                                 std::cref(tmp), std::ref(blurred),
-                                 w, h, radius, x0, x1);
-        }
-        for (auto& th : workers) th.join();
-    }
+    for (auto& th : workers) th.join();
 }
