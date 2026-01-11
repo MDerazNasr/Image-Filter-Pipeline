@@ -8,6 +8,7 @@ find_package(OpenCV REQUIRED)
 
 add_executable(pipeline
     src/main.cpp
+    src/pipeline.cpp
     src/filters_cpu.cpp
 )
 

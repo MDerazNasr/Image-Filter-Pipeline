@@ -921,6 +921,7 @@ CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o: \
   /opt/homebrew/Cellar/opencv/4.13.0/include/opencv4/opencv2/video.hpp \
   /opt/homebrew/Cellar/opencv/4.13.0/include/opencv4/opencv2/video/tracking.hpp \
   /opt/homebrew/Cellar/opencv/4.13.0/include/opencv4/opencv2/video/background_segm.hpp \
+  /Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/include/workspace.hpp \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/thread \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__thread/this_thread.h \
   /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__thread/thread.h

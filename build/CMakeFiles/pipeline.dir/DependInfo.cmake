@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/filters_cpu.cpp" "CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o" "gcc" "CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o.d"
   "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/main.cpp" "CMakeFiles/pipeline.dir/src/main.cpp.o" "gcc" "CMakeFiles/pipeline.dir/src/main.cpp.o.d"
+  "/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/src/pipeline.cpp" "CMakeFiles/pipeline.dir/src/pipeline.cpp.o" "gcc" "CMakeFiles/pipeline.dir/src/pipeline.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

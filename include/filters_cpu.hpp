@@ -15,6 +15,10 @@ void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius, int th
 //Sobel edge detection on grayscale image
 void sobel_cpu(const cv::Mat& gray, cv::Mat& edges, int threads);
 
+// Multi-threaded versions
+void grayscale_cpu_mt(const cv::Mat& bgr, cv::Mat& gray, int threads);
+void sobel_cpu_mt(const cv::Mat& gray, cv::Mat& edges, int threads);
+
 /*
 #pragma once prvents the header from being included twice
 
@@ -35,5 +39,5 @@ void box_blur_cpu_fast_mt_ws(
     cv::Mat &blurred,
     int radius,
     int threads,
-    CpuWorkspace ws
+    CpuWorkspace& ws
 );

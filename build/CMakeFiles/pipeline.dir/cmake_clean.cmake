@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/pipeline.dir/src/filters_cpu.cpp.o.d"
   "CMakeFiles/pipeline.dir/src/main.cpp.o"
   "CMakeFiles/pipeline.dir/src/main.cpp.o.d"
+  "CMakeFiles/pipeline.dir/src/pipeline.cpp.o"
+  "CMakeFiles/pipeline.dir/src/pipeline.cpp.o.d"
   "pipeline"
   "pipeline.pdb"
 )

@@ -177,6 +177,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/pipeline.dir/build.make CMakeFiles/pipeline.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/pipeline.o: src/pipeline.cpp.o
+.PHONY : src/pipeline.o
+
+# target to build an object file
+src/pipeline.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pipeline.dir/build.make CMakeFiles/pipeline.dir/src/pipeline.cpp.o
+.PHONY : src/pipeline.cpp.o
+
+src/pipeline.i: src/pipeline.cpp.i
+.PHONY : src/pipeline.i
+
+# target to preprocess a source file
+src/pipeline.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pipeline.dir/build.make CMakeFiles/pipeline.dir/src/pipeline.cpp.i
+.PHONY : src/pipeline.cpp.i
+
+src/pipeline.s: src/pipeline.cpp.s
+.PHONY : src/pipeline.s
+
+# target to generate assembly for a file
+src/pipeline.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/pipeline.dir/build.make CMakeFiles/pipeline.dir/src/pipeline.cpp.s
+.PHONY : src/pipeline.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/pipeline.o"
+	@echo "... src/pipeline.i"
+	@echo "... src/pipeline.s"
 .PHONY : help
 
 
