@@ -480,3 +480,81 @@ void sobel_cpu_mt(const cv::Mat& gray, cv::Mat& edges, int threads) {
     }
     for (auto& th : workers) th.join();
 }
+// We reuse your existing workers:
+// - blur_horizontal_rows_worker(...)
+// - blur_vertical_cols_worker(...)
+//
+// The ONLY difference is where tmp comes from:
+// - BEFORE: tmp = new vector every call
+// - NOW: tmp = ws.tmp reused
+
+void box_blur_cpu_fast_mt_ws(
+    const cv::Mat& gray,
+    cv::Mat& blurred,
+    int radius,
+    int threads,
+    CpuWorkspace& ws
+) {
+    // 1) Validate input
+    if (gray.empty()) throw std::runtime_error("box_blur_cpu_fast_mt_ws: input empty");
+    if (gray.type() != CV_8UC1) throw std::runtime_error("box_blur_cpu_fast_mt_ws: expected CV_8UC1");
+    if (radius < 1) throw std::runtime_error("box_blur_cpu_fast_mt_ws: radius must be >= 1");
+
+    int w = gray.cols;
+    int h = gray.rows;
+
+    // 2) Ensure workspace has correct size (allocates only if needed)
+    ws.ensureSize(w, h);
+
+    // tmp is now a reference to the workspace buffer
+    std::vector<int>& tmp = ws.tmp;
+
+    // 3) Clamp thread count
+    if (threads < 1) threads = 1;
+    threads = std::min(threads, h);
+
+    // -----------------------------
+    // PASS 1: Horizontal (split by rows)
+    // -----------------------------
+    {
+        int chunk = (h + threads - 1) / threads;
+        std::vector<std::thread> workers;
+        workers.reserve(threads);
+
+        for (int t = 0; t < threads; t++) {
+            int y0 = t * chunk;
+            int y1 = std::min(h, y0 + chunk);
+            if (y0 >= y1) break;
+
+            workers.emplace_back(blur_horizontal_rows_worker,
+                                 std::cref(gray), std::ref(tmp),
+                                 radius, y0, y1);
+        }
+        for (auto& th : workers) th.join();
+    }
+
+    // 4) Allocate output (OpenCV Mat reuses memory if same shape/type)
+    blurred.create(h, w, CV_8UC1);
+
+    // -----------------------------
+    // PASS 2: Vertical (split by columns)
+    // -----------------------------
+    {
+        int threads2 = std::min(threads, w);
+        int chunk = (w + threads2 - 1) / threads2;
+
+        std::vector<std::thread> workers;
+        workers.reserve(threads2);
+
+        for (int t = 0; t < threads2; t++) {
+            int x0 = t * chunk;
+            int x1 = std::min(w, x0 + chunk);
+            if (x0 >= x1) break;
+
+            workers.emplace_back(blur_vertical_cols_worker,
+                                 std::cref(tmp), std::ref(blurred),
+                                 w, h, radius, x0, x1);
+        }
+        for (auto& th : workers) th.join();
+    }
+}
