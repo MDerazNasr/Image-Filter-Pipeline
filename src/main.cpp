@@ -99,18 +99,19 @@ int main(int argc, char** argv) {
 
             // --- grayscale ---
             Timer tGray;
-            grayscale_cpu(bgr, gray);
+            int T = 8; // number of threads
+            grayscale_cpu(bgr, gray, T);
             double msGray = tGray.ms();
 
             // --- blur ---
             // Use the FAST blur if you implemented it; otherwise change this to box_blur_cpu(...)
             Timer tBlur;
-            box_blur_cpu_fast(gray, blurred, 1); // radius=1 => 3x3 box blur
+            box_blur_cpu_fast(gray, blurred, 1, T); // radius=1 => 3x3 box blur
             double msBlur = tBlur.ms();
 
             // --- sobel edges ---
             Timer tSobel;
-            sobel_cpu(blurred, edges);
+            sobel_cpu(blurred, edges, T);
             double msSobel = tSobel.ms();
 
             // Save result
@@ -164,11 +165,12 @@ int main(int argc, char** argv) {
                 frames++;
 
                 Timer perFrame;
+                int T = 8; // start with 8, change later or make CLI flag
 
                 // Our custom CPU pipeline
-                grayscale_cpu(frame, gray);
-                box_blur_cpu_fast(gray, blurred, 1);
-                sobel_cpu(blurred, edges);
+                grayscale_cpu(frame, gray, T);
+                box_blur_cpu_fast(gray, blurred, 1, T);
+                sobel_cpu(blurred, edges, T);
 
                 // Convert 1-channel -> 3-channel so the writer can encode it
                 cv::cvtColor(edges, edgesBgr, cv::COLOR_GRAY2BGR);

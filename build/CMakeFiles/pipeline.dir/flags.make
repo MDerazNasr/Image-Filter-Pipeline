@@ -6,7 +6,7 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/Users/mderaznasr/Documents/GitHub/Image-Filter-Pipeline/include -isystem /opt/homebrew/Cellar/opencv/4.13.0/include/opencv4
 
-CXX_FLAGSarm64 = -g -std=gnu++17 -arch arm64
+CXX_FLAGSarm64 = -O3 -DNDEBUG -std=gnu++17 -arch arm64
 
-CXX_FLAGS = -g -std=gnu++17 -arch arm64
+CXX_FLAGS = -O3 -DNDEBUG -std=gnu++17 -arch arm64
 

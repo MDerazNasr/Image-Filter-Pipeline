@@ -1,0 +1,76 @@
+Day 6 - Performance Hygiene
+
+Goal - 
+
+Right now, even though you’re fast, you’re still doing hidden expensive work every frame:
+
+Creating std::vector<int> tmp(w*h) inside blur every call → alloc/free every frame
+
+Creating thread vectors every call (less bad but still overhead)
+
+Recomputing chunk boundaries repeatedly
+
+Day 6 makes it “pro”:
+✅ Allocate once, reuse forever
+✅ Blur temp buffers reused per frame
+✅ Optional: reuse threads (simple thread pool later, not today)
+✅ Cleaner API for video loop
+
+0) Dummy mental model: why allocations hurt
+What is an allocation?
+
+When you do:
+
+std::vector<int> tmp(w*h);
+
+
+the computer:
+
+asks the OS for a big chunk of memory
+
+OS finds it, gives it back
+
+later you free it
+
+Doing this 301 times per video is unnecessary overhead.
+
+Even if it’s not “slow enough to notice” now, it’s a huge red flag for:
+
+longer videos
+
+larger frames (1080p, 4K)
+
+future GPU copies
+
+real-time systems
+
+So we want:
+
+allocate once → reuse every frame
+
+1) What we’ll build (simple architecture)
+
+We’ll create a small helper class:
+
+CpuWorkspace
+
+A “workspace” is just a reusable toolbox that holds:
+
+tmp buffer for blur
+
+(optional) thread objects later
+
+width/height so it knows when to resize
+
+So your video loop becomes:
+
+workspace.ensureSize(w, h);
+
+grayscale_cpu_mt(frame, gray, T);
+box_blur_cpu_fast_mt_ws(gray, blurred, 1, T, workspace); // reuse tmp
+sobel_cpu_mt(blurred, edges, T);
+
+
+Key idea:
+
+blur uses workspace.tmp instead of allocating every time

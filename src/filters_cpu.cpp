@@ -14,6 +14,11 @@ why grayscale input?
 
 */
 
+// Forward declarations for multi-threaded versions
+void grayscale_cpu_mt(const cv::Mat& bgr, cv::Mat& gray, int threads);
+void box_blur_cpu_fast_mt(const cv::Mat& gray, cv::Mat& blurred, int radius, int threads);
+void sobel_cpu_mt(const cv::Mat& gray, cv::Mat& edges, int threads);
+
 // Helper: clamp an integer into [0, 255]
 static inline uint8_t clamp_u8(int v){
     if (v < 0) return 0;
@@ -21,7 +26,11 @@ static inline uint8_t clamp_u8(int v){
     return static_cast<uint8_t>(v);
 }
 
-void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray) {
+void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray, int threads) {
+    if (threads > 1) {
+        grayscale_cpu_mt(bgr, gray, threads);
+        return;
+    }
     // Validate input so we fail loudly instead of silently
     if (bgr.empty()) {
         throw std::runtime_error("Input image is empty (failed to load?)");
@@ -58,13 +67,6 @@ void grayscale_cpu(const cv::Mat& bgr, cv::Mat& gray) {
 
     }
 
-}
-
-// This helper clamps an int to [0,255]
-static inline uint8_t clamp_u8(int v) {
-    if (v < 0) return 0;
-    if (v > 255) return 0;
-    return static_cast<uint8_t>(v);
 }
 
 /*
@@ -160,7 +162,11 @@ void grayscale_cpu_mt(const cv::Mat &bgr, cv::Mat &gray, int threads) {
 
 // Fast box blur using two 1D passes (horizontal then vertical).
 // This is still a true box blur, just computed efficiently.
-void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius) {
+void box_blur_cpu_fast(const cv::Mat& gray, cv::Mat& blurred, int radius, int threads) {
+    if (threads > 1) {
+        box_blur_cpu_fast_mt(gray, blurred, radius, threads);
+        return;
+    }
     // 1) Validate input
     if (gray.empty()) throw std::runtime_error("box_blur_cpu_fast: input empty");
     if (gray.type() != CV_8UC1) throw std::runtime_error("box_blur_cpu_fast: expected CV_8UC1");
@@ -362,7 +368,11 @@ void box_blur_cpu_fast_mt(const cv::Mat& gray, cv::Mat& blurred, int radius, int
     }
 }
     
-void sobel_cpu(const cv::Mat& gray, cv::Mat& edges) {
+void sobel_cpu(const cv::Mat& gray, cv::Mat& edges, int threads) {
+    if (threads > 1) {
+        sobel_cpu_mt(gray, edges, threads);
+        return;
+    }
     // Validate input
     if (gray.empty()) throw std::runtime_error("sobel_cpu: input empty");
     if (gray.type() != CV_8UC1) throw std::runtime_error("sobel_cpu: expected CV_8UC1");
