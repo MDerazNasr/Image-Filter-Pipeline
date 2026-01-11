@@ -18,11 +18,3 @@ Install dependencies:
 ```bash
 brew install cmake opencv
 
-
-In README, add:
-
-```md
-## Performance (M4 MacBook Pro)
-Example video run (CPU multithread, 8 threads):
-- ~6.6 ms/frame
-- ~122 FPS average
